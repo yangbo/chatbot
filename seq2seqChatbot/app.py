@@ -34,9 +34,9 @@ def reply():
     req_msg = request.form['msg']
     res_msg = '^_^'
     print(req_msg)
-    print(''.join([f+' ' for fh in req_msg for f in fh]))
-    req_msg=''.join([f+' ' for fh in req_msg for f in fh])
-    print(req_msg)
+    # print(''.join([f+' ' for fh in req_msg for f in fh]))
+    # req_msg=''.join([f+' ' for fh in req_msg for f in fh])
+    # print(req_msg)
     res_msg = execute.decode_line(sess, model, enc_vocab, rev_dec_vocab, req_msg )
     
     res_msg = res_msg.replace('_UNK', '^_^')
@@ -64,7 +64,7 @@ import tensorflow as tf
 import execute
 
 sess = tf.Session()
-sess, model, enc_vocab, rev_dec_vocab = execute.init_session(sess, conf='seq2seq_serve.ini')
+sess, model, enc_vocab, rev_dec_vocab = execute.init_session(sess, conf='seq2seq.ini')
 #_________________________________________________________________
 
 # 启动APP

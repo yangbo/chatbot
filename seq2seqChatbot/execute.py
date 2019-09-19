@@ -25,6 +25,8 @@ import os
 import random
 import sys
 import time
+
+import jieba
 import prepareData
 
 import numpy as np
@@ -222,6 +224,7 @@ def init_session(sess, conf='seq2seq.ini'):
     _, rev_dec_vocab = prepareData.initialize_vocabulary(dec_vocab_path)
 
     return sess, model, enc_vocab, rev_dec_vocab
+
 
 def decode_line(sess, model, enc_vocab, rev_dec_vocab, sentence):
     # Get token-ids for the input sentence.

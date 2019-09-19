@@ -2,6 +2,9 @@
 import math
 import os
 import random
+
+import jieba
+
 import getConfig
 from tensorflow.python.platform import gfile
 import re
@@ -84,7 +87,7 @@ def prepare_custom_data(working_directory, train_enc, train_dec, test_enc, test_
 
 # 用于语句切割的正则表达
 _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
-_DIGIT_RE = re.compile(br"\d")
+_DIGIT_RE = re.compile(r"\d")
 
 def basic_tokenizer(sentence):
   #将一个语句中的字符切割成一个list，这样是为了下一步进行向量化训练
@@ -93,13 +96,16 @@ def basic_tokenizer(sentence):
     words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
   return [w for w in words if w]
 
+def chinese_tokenizer(sentence):
+    return jieba.cut(sentence)
+
 def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):#将输入语句从中文字符转换成数字符号
 
-  words = basic_tokenizer(sentence)
+  words = chinese_tokenizer(sentence)
   if not normalize_digits:
     return [vocabulary.get(w, UNK_ID) for w in words]
   # Normalize digits by 0 before looking words up in the vocabulary.
-  return [vocabulary.get(re.sub(_DIGIT_RE, b"0", w), UNK_ID) for w in words]
+  return [vocabulary.get(re.sub(_DIGIT_RE, "0", w), UNK_ID) for w in words]
 
 def initialize_vocabulary(vocabulary_path):#初始化字典，这里的操作与上面的48行的的作用是一样的，是对调字典中的key-value
   if gfile.Exists(vocabulary_path):
