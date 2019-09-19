@@ -19,7 +19,7 @@ UNK_ID = 3
 def create_vocabulary(input_file,vocabulary_size,output_file):
     vocabulary = {}
     k=int(vocabulary_size)
-    with open(input_file,'r') as f:
+    with open(input_file, 'r', encoding='utf-8') as f:
          counter = 0
          for line in f:
             counter += 1
@@ -34,7 +34,7 @@ def create_vocabulary(input_file,vocabulary_size,output_file):
          if len(vocabulary_list) > k:
             vocabulary_list = vocabulary_list[:k]
          print(input_file + " 词汇表大小:", len(vocabulary_list))
-         with open(output_file, 'w') as ff:
+         with open(output_file, 'w', encoding='utf-8') as ff:
                for word in vocabulary_list:
                    ff.write(word + "\n")
 
@@ -42,13 +42,13 @@ def create_vocabulary(input_file,vocabulary_size,output_file):
 def convert_to_vector(input_file, vocabulary_file, output_file):
 	print('对话转向量...')
 	tmp_vocab = []
-	with open(vocabulary_file, "r") as f:#读取字典文件的数据，生成一个dict，也就是键值对的字典
+	with open(vocabulary_file, "r", encoding='utf-8') as f:#读取字典文件的数据，生成一个dict，也就是键值对的字典
 		tmp_vocab.extend(f.readlines())
 	tmp_vocab = [line.strip() for line in tmp_vocab]
 	vocab = dict([(x, y) for (y, x) in enumerate(tmp_vocab)])#将vocabulary_file中的键值对互换，因为在字典文件里是按照{123：好}这种格式存储的，我们需要换成{好：123}格式
 
-	output_f = open(output_file, 'w')
-	with open(input_file, 'r') as f:
+	output_f = open(output_file, 'w', encoding='utf-8')
+	with open(input_file, 'r', encoding='utf-8') as f:
 		for line in f:
 			line_vec = []
 			for words in line.split():
@@ -104,7 +104,7 @@ def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):#将输�
 def initialize_vocabulary(vocabulary_path):#初始化字典，这里的操作与上面的48行的的作用是一样的，是对调字典中的key-value
   if gfile.Exists(vocabulary_path):
     rev_vocab = []
-    with open(vocabulary_path, "r") as f:
+    with open(vocabulary_path, "r", encoding='utf-8') as f:
       rev_vocab.extend(f.readlines())
     rev_vocab = [line.strip() for line in rev_vocab]
     vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
