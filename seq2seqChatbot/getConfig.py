@@ -23,7 +23,7 @@ except:
 
 def get_config(config_file='seq2seq.ini'):
     parser = SafeConfigParser()
-    parser.read(config_file)
+    parser.read(config_file, encoding='utf-8')
     # get the ints, floats and strings
     _conf_ints = [ (key, int(value)) for key,value in parser.items('ints') ]
     _conf_floats = [ (key, float(value)) for key,value in parser.items('floats') ]
