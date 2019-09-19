@@ -6,6 +6,8 @@ import jieba
 from tensorflow.python.platform import gfile
 
 # 特殊标记，用来填充标记对话
+from db import FaqFindlaw
+
 PAD = "__PAD__"
 GO = "__GO__"
 EOS = "__EOS__"  # 对话结束
