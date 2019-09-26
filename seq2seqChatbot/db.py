@@ -9,13 +9,22 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 config = {
     'sqlite': {
         'driver': 'sqlite',
+        'database': dir_path + '/../../../../xie-zhi-chatbot-data/data/faq.db',
+        'log_queries': False
+    }
+}
+config2 = {
+    'sqlite': {
+        'driver': 'sqlite',
         'database': dir_path + '/../../../../xie-zhi-chatbot-data/data/faq-v1-20190916.db',
         'log_queries': False
     }
 }
 
 db = DatabaseManager(config)
-Model.set_connection_resolver(db)
+db2 = DatabaseManager(config2)
+
+# Model.set_connection_resolver(db)
 
 
 class FaqFindlaw(Model):

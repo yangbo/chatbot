@@ -3,10 +3,16 @@
 import math
 import os
 import random
+from pathlib import Path
+
 import getConfig
 import jieba
+import re
 
 from db import FaqFindlaw
+from orator import Model
+
+from db import db2, db
 
 gConfig = {}
 
@@ -52,6 +58,9 @@ def process_file(dialog_file):
 
 
 def convert_seq2seq_files(questions, answers, TESTSET_SIZE):
+    working_dir = Path(gConfig['working_directory'])
+    if not working_dir.exists():
+        working_dir.mkdir(parents=True)
     # 创建文件
     train_enc = open(gConfig['train_enc'], 'w', encoding='utf8')  # 问
     train_dec = open(gConfig['train_dec'], 'w', encoding='utf8')  # 答
@@ -80,23 +89,37 @@ def convert_seq2seq_files(questions, answers, TESTSET_SIZE):
 # 从文件读取问答数据
 # ask, response = process_file(conv_path)
 
+def pre_process_text(text):
+    """预处理文本数据，例如将手机号码替换为 _PHONE_ 的形式。"""
+    text = text.replace('\n', '').replace('\r', '').replace(' ', '')
+    # 替换电话号码
+    text = re.sub(r'\d+\*\*\*\*', 'PHONE', text)
+    return text
+
+
 # 从数据库读取问答数据
 def read_from_db():
     questions = []  # 问
     answers = []  # 答
-    for chunk in FaqFindlaw.chunk(100):
-        for faq in chunk:
-            q = faq.question.replace('\n', '').replace('\r', '')
-            a = faq.best_answer.replace('\n', '').replace('\r', '')
-            questions.append(" ".join(jieba.cut(q)))
-            answers.append(" ".join(jieba.cut(a)))
-            if len(questions) % 1000 == 0:
-                print("导出了%d条记录" % len(questions))
+    db_list = [db, db2]
+    for conn in db_list:
+        print('导出db: ', conn)
+        Model.set_connection_resolver(conn)
+        for chunk in FaqFindlaw.chunk(100):
+            for faq in chunk:
+                q = pre_process_text(faq.question)
+                a = pre_process_text(faq.best_answer)
+                questions.append(" ".join(jieba.cut(q)))
+                answers.append(" ".join(jieba.cut(a)))
+                if len(questions) % 1000 == 0:
+                    print("导出了%d条记录" % len(questions))
     return questions, answers
 
 
-ask, response = read_from_db()
+if __name__ == '__main__':
 
-# 生成的*.enc文件保存了问题
-# 生成的*.dec文件保存了回答
-convert_seq2seq_files(ask, response, 10000)
+    ask, response = read_from_db()
+
+    # 生成的*.enc文件保存了问题
+    # 生成的*.dec文件保存了回答
+    convert_seq2seq_files(ask, response, 10000)

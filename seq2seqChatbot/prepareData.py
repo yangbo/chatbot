@@ -8,6 +8,8 @@ from tensorflow.python.platform import gfile
 # 特殊标记，用来填充标记对话
 from db import FaqFindlaw
 
+from data_utls import pre_process_text
+
 PAD = "__PAD__"
 GO = "__GO__"
 EOS = "__EOS__"  # 对话结束
@@ -106,7 +108,7 @@ def chinese_tokenizer(sentence):
 
 
 def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):  # 将输入语句从中文字符转换成数字符号
-
+    sentence = pre_process_text(sentence)
     words = chinese_tokenizer(sentence)
     if not normalize_digits:
         return [vocabulary.get(w, UNK_ID) for w in words]
